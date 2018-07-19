@@ -17,14 +17,14 @@ app.post("/todos" , (req, res) => {
   });
 
   todo.save().then( (result) => {
-    console.log(JSON.stringify(result,undefined,2));
     res.send(result);
   } , (err) => {
-    console.log("Unable to save todo");
-    res.status(400).send(e);
+    res.status(400).send(err);
   });
 });
 
 app.listen(3000 , () => {
   console.log("Started on port 3000");
 });
+
+module.exports.app =app;
