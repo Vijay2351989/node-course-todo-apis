@@ -148,14 +148,15 @@ describe("#DELETE /todod/:id" , () => {
     expect( (res) => {
       expect(res.body.result.text).toBe(todos[0].text);
     }).
-    end((err, result) => {
+    end((err, res) => {
        if(err)
        {
          return done(err);
        }
 
        Todo.findById(`${todos[0]._id.toHexString()}`).then( (result) => {
-           expect(result).toBe(null);
+           //expect(result).toBe(null);
+           expect(result).toNotExist();
            done();
        }).catch((err) =>
        {
