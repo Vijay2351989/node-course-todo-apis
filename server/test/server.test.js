@@ -13,7 +13,9 @@ var todos = [{
 },
 {
   _id : new ObjectID(),
-  text : "Second test todo."
+  text : "Second test todo.",
+  completed : true,
+  completedAt : 123
 }];
 
 beforeEach((done) => {
@@ -125,7 +127,7 @@ describe("#GET todos/:id" , () => {
 
 
 
-describe("#DELETE /todod/:id" , () => {
+describe("#DELETE /todos/:id" , () => {
   it("Returns doc not found for invalid object id" ,(done) => {
     request(app).
     delete("/todos/123").
@@ -157,6 +159,85 @@ describe("#DELETE /todod/:id" , () => {
        Todo.findById(`${todos[0]._id.toHexString()}`).then( (result) => {
            //expect(result).toBe(null);
            expect(result).toNotExist();
+           done();
+       }).catch((err) =>
+       {
+         done(e);
+       });
+    });
+  });
+  });
+
+  describe("#PATCH /todos/:id" , () => {
+    it("Returns doc not found for invalid object id" ,(done) => {
+      request(app).
+      patch("/todos/123").
+      send({completed : true}).
+      expect(404).
+      end(done);
+    });
+
+    it("Returns doc not found for non existing object id" ,(done) => {
+     var id = new ObjectID().toHexString();
+      request(app).
+      patch(`/todos/${id}`).
+      send({completed : true}).
+      expect(404).
+      end(done);
+    });
+
+    it("Returns doc with updated details" ,(done) => {
+      var text = "Updated text for completed task";
+      request(app).
+      patch(`/todos/${todos[0]._id.toHexString()}`).
+      send({completed : true, text}).
+      expect(200).
+      expect((res) => {
+        expect(res.body.result.completed).toBe(true);
+        expect(res.body.result.text).toBe(text);
+        expect(res.body.result.completedAt).toBeA("number");
+      })
+      .end((err, res) => {
+         if(err)
+         {
+           return done(err);
+         }
+
+         Todo.findById(`${todos[0]._id.toHexString()}`).then( (result) => {
+             //expect(result).toBe(null);
+             expect(result.completed).toBe(true);
+             expect(result.text).toBe(text);
+             expect(result.completedAt).toBeA("number");
+             done();
+         }).catch((err) =>
+         {
+           done(e);
+         });
+      });
+    });
+
+  it("Returns doc with updated details with completedAt set to null" ,(done) => {
+  var text = "Updated text for uncompleted task";
+    request(app).
+    patch(`/todos/${todos[1]._id.toHexString()}`).
+    send({completed : false,text}).
+    expect(200).
+    expect((res) => {
+      expect(res.body.result.completed).toBe(false);
+      expect(res.body.result.text).toBe(text);
+      expect(res.body.result.completedAt).toNotExist();
+    })
+    .end((err, res) => {
+       if(err)
+       {
+         return done(err);
+       }
+
+       Todo.findById(`${todos[1]._id.toHexString()}`).then( (result) => {
+           //expect(result).toBe(null);
+           expect(result.completedAt).toNotExist();
+           expect(result.completed).toBe(false);
+             expect(result.text).toBe(text);
            done();
        }).catch((err) =>
        {
