@@ -122,3 +122,45 @@ describe("#GET todos/:id" , () => {
     end(done);
   });
 });
+
+
+
+describe("#DELETE /todod/:id" , () => {
+  it("Returns doc not found for invalid object id" ,(done) => {
+    request(app).
+    delete("/todos/123").
+    expect(404).
+    end(done);
+  });
+
+  it("Returns doc not found for non existing object id" ,(done) => {
+   var id = new ObjectID().toHexString();
+    request(app).
+    delete(`/todos/${id}`).
+    expect(404).
+    end(done);
+  });
+
+  it("Removes the doc with the given object id", (done) => {
+    request(app).
+    delete(`/todos/${todos[0]._id.toHexString()}`).
+    expect(200).
+    expect( (res) => {
+      expect(res.body.result.text).toBe(todos[0].text);
+    }).
+    end((err, result) => {
+       if(err)
+       {
+         return done(err);
+       }
+
+       Todo.findById(`${todos[0]._id.toHexString()}`).then( (result) => {
+           expect(result).toBe(null);
+           done();
+       }).catch((err) =>
+       {
+         done(e);
+       });
+    });
+  });
+});
