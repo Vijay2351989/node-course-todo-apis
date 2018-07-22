@@ -7,7 +7,6 @@ const {mongoose} = require("./db/mongoose.js");
 const {Todo} = require("./models/todo.js");
 const {User} = require("./models/user.js");
 const {authenticate} = require("./middleware/authenticate.js")
-
 const _ = require("lodash");
 
 var app = express();
@@ -122,6 +121,19 @@ app.post("/users" , (req, res) => {
   }).catch((err) =>{
 
     res.status(400).send(err);
+  });
+});
+
+
+app.post("/users/login" , (req,res) => {
+  var user = _.pick(req.body, ['email','password']);
+  User.findByCredentials(user.email,user.password).then((user) => {
+     return user.generateAuthToken();
+  }).
+  then((token) =>{
+    res.header('x-auth' ,token).send(user);
+  }).catch((err) => {
+    res.status(400).send();
   });
 });
 
