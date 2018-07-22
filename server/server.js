@@ -6,6 +6,7 @@ const {ObjectID} = require("mongodb");
 const {mongoose} = require("./db/mongoose.js");
 const {Todo} = require("./models/todo.js");
 const {User} = require("./models/user.js");
+const {authenticate} = require("./middleware/authenticate.js")
 
 const _ = require("lodash");
 
@@ -119,8 +120,16 @@ app.post("/users" , (req, res) => {
   then((token) =>{
     res.header('x-auth' ,token).send(userObj);
   }).catch((err) =>{
+
     res.status(400).send(err);
   });
+});
+
+
+
+
+app.post("/users/me" , authenticate,  (req, res) => {
+  res.send(req.user);
 });
 
 app.listen(port , () => {
