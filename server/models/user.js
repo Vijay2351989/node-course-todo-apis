@@ -77,7 +77,7 @@ userSchema.pre("save",function (next){
 
 userSchema.statics.findByCredentials = function(email,password){
   var User = this;
-  return User.findOne({email}).then((user) => {
+   return User.findOne({email}).then((user) => {
     if(!user)
     {
       return Promise.reject();
@@ -132,6 +132,16 @@ userSchema.methods.generateAuthToken = function() {
   return user.save().then(() => {
     return token;
   });
+};
+
+userSchema.methods.removeToken = function(token) {
+  var user = this;
+
+  return user.update({
+    $pull : {
+      tokens : {token}
+  }
+});
 };
 
 var User = mongoose.model("User" ,userSchema);
