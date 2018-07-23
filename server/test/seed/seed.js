@@ -18,7 +18,11 @@ var users = [{
 {
   _id : userTwoId,
   email : "rachita@gmail.com",
-  password : "userTwoPassword"
+  password : "userTwoPassword",
+  tokens : [{
+    access : "auth",
+    token : jwt.sign({_id : userTwoId,access : "auth"} , "abc123").toString()
+  }]
 }];
 
 var populateUsers = (done) =>{
@@ -35,13 +39,15 @@ var populateUsers = (done) =>{
 
 var todos = [{
   _id : new ObjectID(),
-  text : "First test todo."
+  text : "First test todo.",
+  _creator : userOneId
 },
 {
   _id : new ObjectID(),
   text : "Second test todo.",
   completed : true,
-  completedAt : 123
+  completedAt : 123,
+  _creator : userTwoId
 }];
 
 var populateTodos = (done) =>{
