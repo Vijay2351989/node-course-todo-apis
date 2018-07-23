@@ -57,23 +57,7 @@ userSchema.pre("save",function (next){
 
 });
 
-// userSchema.pre('findOne', function() {
-//   console.log(this instanceof mongoose.Query); // true
-//   console.log(this);
-//   if(this.password)
-//   {
-//   bcrypt.genSalt(10, (err,salt) => {
-//     bcrypt.hash(this.password,salt,(err,hash) => {
-//       console.log(hash);
-//       this.password = hash;
-//       next();
-//     });
-//   });
-//   }
-//   else {
-//     next();
-//   }
-// });
+
 
 userSchema.statics.findByCredentials = function(email,password){
   var User = this;
